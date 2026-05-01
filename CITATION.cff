@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Nelson Mc Kenzie"
+  given-names: "Gerald Enrique"
+  orcid: "https://orcid.org/0009-0008-6017-4922"
+title: "Quantum-Cryptanalysis-Suite"
+version: 1.0.0
+doi: 10.5281/zenodo.19961317
+date-released: 2026-05-01
+url: "https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite"

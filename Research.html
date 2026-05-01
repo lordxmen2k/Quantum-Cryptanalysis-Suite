@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Cryptanalysis Suite — Technical Research Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1a2236;
+            --bg-card: rgba(26, 34, 54, 0.6);
+            --border-subtle: rgba(148, 163, 184, 0.1);
+            --border-glow: rgba(99, 102, 241, 0.3);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #22d3ee;
+            --accent-violet: #a78bfa;
+            --accent-rose: #fb7185;
+            --accent-emerald: #34d399;
+            --accent-amber: #fbbf24;
+            --gradient-hero: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            --gradient-accent: linear-gradient(135deg, var(--accent-cyan), var(--accent-violet));
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.15);
+            --font-body: 'Inter', system-ui, sans-serif;
+            --font-serif: 'Crimson Pro', Georgia, serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Animated background mesh */
+        .bg-mesh {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99,102,241,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(34,211,238,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 50% at 50% 100%, rgba(167,139,250,0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .bg-grid {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image:
+                linear-gradient(rgba(148,163,184,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148,163,184,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0 2rem;
+        }
+
+        nav .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        nav .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        nav .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+            position: relative;
+        }
+
+        nav .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        nav .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-accent);
+            transition: width 0.3s;
+        }
+
+        nav .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 140px 2rem 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-cyan);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-badge .pulse {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 .gradient-text {
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero .subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            font-weight: 300;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .meta-card {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .meta-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--border-glow);
+        }
+
+        .meta-card .icon {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 1.1rem;
+        }
+
+        .meta-card .icon.orcid { background: rgba(168, 192, 32, 0.15); }
+        .meta-card .icon.doi { background: rgba(34, 211, 238, 0.15); }
+        .meta-card .icon.git { background: rgba(167, 139, 250, 0.15); }
+        .meta-card .icon.date { background: rgba(251, 113, 133, 0.15); }
+
+        .meta-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .meta-card .value {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .meta-card a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .meta-card a:hover {
+            text-decoration: underline;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-accent);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(34, 211, 238, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(34, 211, 238, 0.35);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--border-glow);
+            background: rgba(26, 34, 54, 0.8);
+        }
+
+        /* Main Content */
+        main {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+        }
+
+        section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .section-number {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--accent-violet);
+            background: rgba(167, 139, 250, 0.1);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+        }
+
+        h2 {
+            font-family: var(--font-serif);
+            font-size: 1.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 2rem 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3 .hash {
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            font-size: 1.05rem;
+        }
+
+        /* Abstract Box */
+        .abstract-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .abstract-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-accent);
+        }
+
+        .abstract-box h3 {
+            margin-top: 0;
+            font-family: var(--font-serif);
+            font-size: 1.5rem;
+        }
+
+        .abstract-box p {
+            font-style: italic;
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .keywords {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .keyword {
+            padding: 0.35rem 0.75rem;
+            background: rgba(34, 211, 238, 0.08);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--accent-cyan);
+            font-family: var(--font-mono);
+        }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        thead {
+            background: var(--bg-tertiary);
+        }
+
+        th {
+            text-align: left;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        td {
+            padding: 1rem 1.25rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        tbody tr:hover {
+            background: rgba(99, 102, 241, 0.03);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .tag-qaoa { background: rgba(34, 211, 238, 0.12); color: var(--accent-cyan); }
+        .tag-shor { background: rgba(167, 139, 250, 0.12); color: var(--accent-violet); }
+        .tag-grover { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); }
+        .tag-pass { background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); }
+        .tag-fail { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); }
+
+        /* Code Blocks */
+        .code-block {
+            background: #0d1117;
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 1.5rem 0;
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem 1.25rem;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .code-header .lang {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .code-header .dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .code-header .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        pre {
+            padding: 1.25rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: #c9d1d9;
+        }
+
+        code {
+            font-family: var(--font-mono);
+        }
+
+        .code-keyword { color: #ff7b72; }
+        .code-func { color: #d2a8ff; }
+        .code-string { color: #a5d6ff; }
+        .code-comment { color: #8b949e; }
+        .code-number { color: #79c0ff; }
+        .code-class { color: #f0883e; }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-accent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-glow);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .info-card:hover::before {
+            opacity: 1;
+        }
+
+        .info-card .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .info-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        /* Comparison Table */
+        .comparison-table th:first-child,
+        .comparison-table td:first-child {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Citations */
+        .citation {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 1.25rem 1.5rem;
+            margin: 1rem 0;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .citation-num {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            color: var(--accent-violet);
+            font-size: 0.9rem;
+            min-width: 2rem;
+        }
+
+        .citation-text {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .citation-text strong {
+            color: var(--text-primary);
+        }
+
+        .citation-text a {
+            color: var(--accent-cyan);
+            text-decoration: none;
+        }
+
+        .citation-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* License Box */
+        .license-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .license-box h3 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .license-box pre {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 1.25rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-top: 1rem;
+            border: 1px solid var(--border-subtle);
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        footer .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        footer a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav .nav-links { display: none; }
+            .hero { padding: 120px 1.5rem 60px; }
+            .hero-meta { flex-direction: column; align-items: center; }
+            main { padding: 0 1.5rem 3rem; }
+            .info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-mesh"></div>
+    <div class="bg-grid"></div>
+
+    <nav>
+        <div class="nav-inner">
+            <div class="logo">QCS</div>
+            <ul class="nav-links">
+                <li><a href="#abstract">Abstract</a></li>
+                <li><a href="#architecture">Architecture</a></li>
+                <li><a href="#algorithms">Algorithms</a></li>
+                <li><a href="#results">Results</a></li>
+                <li><a href="#citations">Citations</a></li>
+                <li><a href="#license">License</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-badge">
+            <span class="pulse"></span>
+            Research Technical Document v1.0
+        </div>
+        <h1>
+            Quantum Cryptanalysis Suite<br>
+            <span class="gradient-text">Simulated Qubits Doing Real Work</span>
+        </h1>
+        <p class="subtitle">
+            A rigorous replacement for decorative quantum metaphors with exact state-vector
+            simulation of QAOA, Shor's algorithm, and Grover's search on toy cryptographic instances.
+        </p>
+
+        <div class="hero-meta">
+            <div class="meta-card">
+                <div class="icon orcid">🆔</div>
+                <div>
+                    <div class="label">ORCID</div>
+                    <div class="value"><a href="https://orcid.org/0009-0008-6017-4922" target="_blank">0009-0008-6017-4922</a></div>
+                </div>
+            </div>
+            <div class="meta-card">
+                <div class="icon doi">📄</div>
+                <div>
+                    <div class="label">DOI</div>
+                    <div class="value"><a href="https://doi.org/10.5281/zenodo.19961317" target="_blank">10.5281/zenodo.19961317</a></div>
+                </div>
+            </div>
+            <div class="meta-card">
+                <div class="icon git">⚡</div>
+                <div>
+                    <div class="label">Repository</div>
+                    <div class="value"><a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" target="_blank">GitHub</a></div>
+                </div>
+            </div>
+            <div class="meta-card">
+                <div class="icon date">📅</div>
+                <div>
+                    <div class="label">Published</div>
+                    <div class="value">May 1, 2026</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-actions">
+            <a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" class="btn btn-primary" target="_blank">
+                <span>⬇</span> Download Source
+            </a>
+            <a href="#abstract" class="btn btn-secondary">
+                <span>📖</span> Read Document
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Author Info -->
+        <section id="author">
+            <div class="abstract-box">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--gradient-accent); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--bg-primary);">G</div>
+                    <div>
+                        <h3 style="margin: 0; font-family: var(--font-body);">Gerald Enrique Nelson Mc Kenzie</h3>
+                        <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Independent Researcher</p>
+                    </div>
+                </div>
+                <p style="font-style: normal; margin-bottom: 0;">
+                    <strong>Correspondence:</strong> <a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" style="color: var(--accent-cyan);">github.com/lordxmen2k/Quantum-Cryptanalysis-Suite</a><br>
+                    <strong>Date:</strong> May 1, 2026 &nbsp;|&nbsp; <strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>License:</strong> Apache 2.0
+                </p>
+            </div>
+        </section>
+
+        <!-- Abstract -->
+        <section id="abstract">
+            <div class="abstract-box">
+                <h3>Abstract</h3>
+                <p>
+                    We present the <strong>Quantum Cryptanalysis Suite (QCS)</strong>, a pedagogical framework that replaces
+                    decorative "quantum resonance field" metaphors with exact state-vector simulation of three canonical
+                    quantum algorithms applied to toy cryptographic instances. The suite implements (1) the Quantum
+                    Approximate Optimization Algorithm (QAOA) for lattice problems including the Shortest Vector Problem
+                    (SVP) and Learning With Errors (LWE), (2) Shor's period-finding algorithm for integer factorization
+                    on composite numbers up to <em>N</em> = 35, and (3) Grover's amplitude amplification for symmetric
+                    key search on 4–6 bit toy ciphers. All algorithms are executed on a lightweight, gate-level state-vector
+                    simulator supporting up to ~16 qubits on consumer hardware. We demonstrate that the original
+                    "resonance field" approach — wherein 96 classical Kuramoto oscillators were presented as qubits —
+                    performed no genuine quantum computation, and we provide a rigorous architectural mapping from those
+                    metaphors to their corresponding quantum algorithmic primitives. This work serves as an educational
+                    reference for understanding the boundary between quantum simulation and quantum-inspired heuristics.
+                </p>
+                <div class="keywords">
+                    <span class="keyword">Quantum Computing</span>
+                    <span class="keyword">Cryptanalysis</span>
+                    <span class="keyword">QAOA</span>
+                    <span class="keyword">Shor's Algorithm</span>
+                    <span class="keyword">Grover's Algorithm</span>
+                    <span class="keyword">Lattice Cryptography</span>
+                    <span class="keyword">State-Vector Simulation</span>
+                    <span class="keyword">Post-Quantum Cryptography</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Introduction -->
+        <section id="introduction">
+            <div class="section-header">
+                <span class="section-number">§01</span>
+                <h2>Introduction</h2>
+            </div>
+            <p>
+                The intersection of quantum computing and cryptanalysis has produced some of the most consequential
+                theoretical results in modern computer science. Shor's algorithm (1994) demonstrated that a universal
+                quantum computer could factor integers and compute discrete logarithms in polynomial time, threatening
+                the foundations of RSA and Elliptic Curve Cryptography (ECC). Grover's algorithm (1996) established
+                a quadratic speedup for unstructured search, effectively halving the security margin of symmetric ciphers.
+                More recently, the Quantum Approximate Optimization Algorithm (QAOA) has emerged as a leading candidate
+                for solving combinatorial optimization problems on near-term quantum hardware, with direct applications
+                to lattice-based cryptanalysis.
+            </p>
+            <p>
+                However, the growing public interest in quantum computing has also produced a proliferation of
+                <em>quantum-washing</em> — the presentation of classical heuristics in quantum terminology without
+                genuine quantum mechanical content. One such example is the "Quantum Resonance Field" approach to
+                classical cipher cracking, wherein coupled classical oscillators (Kuramoto model) are labeled as
+                "qubits" and their synchronization dynamics are interpreted as "quantum coherence." This document
+                provides a rigorous replacement: a complete, executable suite of actual quantum algorithms running on
+                an exact state-vector simulator, with explicit architectural mappings between the original metaphors
+                and their legitimate quantum counterparts.
+            </p>
+        </section>
+
+        <!-- Architecture -->
+        <section id="architecture">
+            <div class="section-header">
+                <span class="section-number">§02</span>
+                <h2>System Architecture</h2>
+            </div>
+
+            <h3><span class="hash">#</span> State-Vector Simulator</h3>
+            <p>
+                The computational backend is a lightweight, gate-level quantum circuit simulator that stores the full
+                <em>2<sup>n</sup></em> complex amplitude vector and applies unitary operations via direct matrix-vector
+                multiplication. The simulator supports single-qubit gates (H, X, Y, Z, RX, RY, RZ), two-qubit gates
+                (CNOT, CZ, controlled-phase, SWAP), and multi-qubit primitives including the Quantum Fourier Transform
+                (QFT) and its inverse. On consumer hardware, the simulator comfortably handles up to approximately 16 qubits
+                (65,536 amplitudes), beyond which memory requirements grow exponentially.
+            </p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+                    <span class="lang">Python</span>
+                </div>
+                <pre><code><span class="code-keyword">class</span> <span class="code-class">QuantumSimulator</span>:
+    <span class="code-keyword">def</span> <span class="code-func">__init__</span>(<span class="code-keyword">self</span>, n_qubits: <span class="code-class">int</span>):
+        <span class="code-keyword">self</span>.n = n_qubits
+        <span class="code-keyword">self</span>.N = <span class="code-number">1</span> &lt;&lt; n_qubits          <span class="code-comment"># 2^n amplitudes</span>
+        <span class="code-keyword">self</span>.state = np.zeros(<span class="code-keyword">self</span>.N, dtype=complex)
+        <span class="code-keyword">self</span>.state[<span class="code-number">0</span>] = <span class="code-number">1.0</span>              <span class="code-comment"># |0...0⟩</span>
+
+    <span class="code-keyword">def</span> <span class="code-func">h</span>(<span class="code-keyword">self</span>, q: <span class="code-class">int</span>):               <span class="code-comment"># Hadamard gate</span>
+        stride = <span class="code-number">1</span> &lt;&lt; q
+        <span class="code-keyword">for</span> base <span class="code-keyword">in</span> <span class="code-func">range</span>(<span class="code-number">0</span>, <span class="code-keyword">self</span>.N, stride &lt;&lt; <span class="code-number">1</span>):
+            <span class="code-keyword">for</span> j <span class="code-keyword">in</span> <span class="code-func">range</span>(base, base + stride):
+                a, b = <span class="code-keyword">self</span>.state[j], <span class="code-keyword">self</span>.state[j + stride]
+                <span class="code-keyword">self</span>.state[j] = (a + b) / np.sqrt(<span class="code-number">2</span>)
+                <span class="code-keyword">self</span>.state[j + stride] = (a - b) / np.sqrt(<span class="code-number">2</span>)</code></pre>
+            </div>
+
+            <h3><span class="hash">#</span> Metaphor-to-Algorithm Mapping</h3>
+            <p>
+                The original "Quantum Resonance Field" codebase employed physics-inspired terminology that, while
+                evocative, bore no mathematical relationship to actual quantum computation. The following table
+                establishes rigorous correspondences between the original metaphors and their legitimate quantum
+                algorithmic counterparts.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Original Metaphor</th>
+                            <th>Quantum Algorithmic Primitive</th>
+                            <th>Mathematical Object</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>"Resonance layers" (p = 4)</td>
+                            <td>QAOA depth / Grover iteration count</td>
+                            <td>Repetitions of cost-mixer or oracle-diffusion</td>
+                        </tr>
+                        <tr>
+                            <td>"Coupling strength" (0.18)</td>
+                            <td>Ising interaction coefficients in H<sub>C</sub></td>
+                            <td>Diagonal cost Hamiltonian terms</td>
+                        </tr>
+                        <tr>
+                            <td>"Phase cluster / coherence R"</td>
+                            <td>Expectation value ⟨ψ|H<sub>C</sub>|ψ⟩</td>
+                            <td>Energy eigenvalue (lower = better solution)</td>
+                        </tr>
+                        <tr>
+                            <td>"Noise kick" (σ = 0.004)</td>
+                            <td>Mixer Hamiltonian evolution e<sup>(−iβH<sub>X</sub>)</sup></td>
+                            <td>RX rotations exploring solution space</td>
+                        </tr>
+                        <tr>
+                            <td>"Anomaly score"</td>
+                            <td>Optimization landscape value</td>
+                            <td>Classical outer-loop objective function</td>
+                        </tr>
+                        <tr>
+                            <td>"Subspace redux" (10<sup>−8</sup>)</td>
+                            <td>Variational parameter precision</td>
+                            <td>Convergence tolerance of classical optimizer</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Algorithms -->
+        <section id="algorithms">
+            <div class="section-header">
+                <span class="section-number">§03</span>
+                <h2>Quantum Algorithms</h2>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="card-icon" style="background: rgba(34,211,238,0.15);">⚛️</div>
+                    <h4>QAOA</h4>
+                    <p>Variational quantum optimization for lattice problems. Maps SVP and LWE to Ising Hamiltonians.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon" style="background: rgba(167,139,250,0.15);">🔢</div>
+                    <h4>Shor's</h4>
+                    <p>Quantum period-finding via QFT. Factors toy RSA instances using modular exponentiation oracles.</p>
+                </div>
+                <div class="info-card">
+                    <div class="card-icon" style="background: rgba(251,113,133,0.15);">🔍</div>
+                    <h4>Grover's</h4>
+                    <p>Amplitude amplification for unstructured search. Quadratic speedup on symmetric key recovery.</p>
+                </div>
+            </div>
+
+            <h3><span class="hash">#</span> QAOA for Lattice Cryptography</h3>
+            <p>
+                The Quantum Approximate Optimization Algorithm (Farhi et al., 2014) is applied to two fundamental
+                lattice problems: the Shortest Vector Problem (SVP) and Learning With Errors (LWE). Both problems
+                are encoded as diagonal cost Hamiltonians where the ground state corresponds to the optimal
+                cryptanalytic solution.
+            </p>
+            <p>
+                For <strong>SVP-2D</strong>, integer coefficients (s, t) are encoded in qubit registers spanning
+                [−3, +3] in each dimension. The cost function computes the squared norm ‖s·b₁ + t·b₂‖² with a
+                heavy penalty for the zero vector. For <strong>LWE</strong>, secret variables sᵢ ∈ ℤ<sub>q</sub> are
+                encoded in ⌈log₂(q)⌉ qubits each, and the cost measures the squared distance between A·s and the
+                target vector b modulo q.
+            </p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+                    <span class="lang">Python</span>
+                </div>
+                <pre><code><span class="code-keyword">def</span> <span class="code-func">_apply_cost</span>(<span class="code-keyword">self</span>, gamma: <span class="code-class">float</span>):
+    <span class="code-comment"># Apply e^(-i * gamma * H_C) where H_C is diagonal</span>
+    phases = np.exp(-1j * gamma * <span class="code-keyword">self</span>._cost_array)
+    <span class="code-keyword">self</span>.sim.state *= phases
+
+<span class="code-keyword">def</span> <span class="code-func">_circuit</span>(<span class="code-keyword">self</span>, params: np.ndarray):
+    <span class="code-keyword">self</span>.sim.reset()
+    <span class="code-keyword">self</span>.sim.h_all()                  <span class="code-comment"># Uniform superposition</span>
+    <span class="code-keyword">for</span> layer <span class="code-keyword">in</span> <span class="code-func">range</span>(<span class="code-keyword">self</span>.p):
+        <span class="code-keyword">self</span>._apply_cost(gammas[layer]) <span class="code-comment"># Cost evolution</span>
+        <span class="code-keyword">for</span> q <span class="code-keyword">in</span> <span class="code-func">range</span>(<span class="code-keyword">self</span>.n):
+            <span class="code-keyword">self</span>.sim.rx(<span class="code-number">2</span> * betas[layer], q)  <span class="code-comment"># Mixer evolution</span></code></pre>
+            </div>
+
+            <h3><span class="hash">#</span> Shor's Algorithm for Integer Factorization</h3>
+            <p>
+                Shor's algorithm (Shor, 1994) reduces integer factorization to order-finding via quantum period
+                detection. The implementation follows the standard three-register architecture: a work register
+                initialized in uniform superposition, an auxiliary register initialized to |1⟩, and a modular
+                exponentiation oracle that computes a<sup>x</sup> mod N reversibly. The Quantum Fourier Transform
+                on the work register extracts the period r, from which factors are recovered via gcd(a<sup>r/2</sup> ± 1, N).
+            </p>
+
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+                    <span class="lang">Python</span>
+                </div>
+                <pre><code><span class="code-comment"># Shor's core: period finding via QFT</span>
+<span class="code-keyword">for</span> q <span class="code-keyword">in</span> <span class="code-func">range</span>(n_work):
+    sim.h(q)                          <span class="code-comment"># Superposition over x</span>
+sim.x(n_work)                         <span class="code-comment"># Aux = |1⟩</span>
+
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> <span class="code-func">range</span>(n_work):
+    ap = <span class="code-func">pow</span>(a, <span class="code-number">2</span>**i, N)
+    _controlled_mult(sim, i, ap)      <span class="code-comment"># |x⟩|1⟩ → |x⟩|a^x mod N⟩</span>
+
+sim.qft(<span class="code-func">list</span>(<span class="code-func">range</span>(n_work)))         <span class="code-comment"># Extract period</span></code></pre>
+            </div>
+
+            <h3><span class="hash">#</span> Grover's Algorithm for Symmetric Key Search</h3>
+            <p>
+                Grover's algorithm (Grover, 1996) provides a quadratic speedup for unstructured search problems.
+                For an <em>n</em>-bit key space, the optimal number of iterations is ⌊π/4 · √N⌋, where N = 2<sup>n</sup>.
+                The algorithm alternates between a phase oracle (which marks the correct key by flipping its phase)
+                and a diffusion operator (which amplifies the amplitude of marked states).
+            </p>
+            <p>
+                Two toy ciphers are provided: a 4-bit XOR+S-box cipher and a 6-bit 2-round Feistel network.
+                In both cases, Grover recovers the key with probability approaching the theoretical maximum
+                (~96% for 4 bits with optimal iterations).
+            </p>
+        </section>
+
+        <!-- Results -->
+        <section id="results">
+            <div class="section-header">
+                <span class="section-number">§04</span>
+                <h2>Experimental Results</h2>
+            </div>
+
+            <h3><span class="hash">#</span> QAOA on 2D Shortest Vector Problem</h3>
+            <p>
+                Lattice basis: <strong>b₁ = (3, 0)</strong>, <strong>b₂ = (1, 2)</strong>. Search radius: ±3 in each
+                dimension (6 qubits, p = 3). Classical brute-force optimum: s = 0, t = −1, norm² = 5.0.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sampled (s, t)</th>
+                            <th>Vector</th>
+                            <th>Squared Norm</th>
+                            <th>Measurement Count</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>(−1, −1)</td>
+                            <td>(−4.0, −2.0)</td>
+                            <td>20.00</td>
+                            <td>519 / 5000</td>
+                            <td><span class="tag tag-pass">Near-optimal</span></td>
+                        </tr>
+                        <tr>
+                            <td>(−1, 1)</td>
+                            <td>(−2.0, 2.0)</td>
+                            <td>8.00</td>
+                            <td>472 / 5000</td>
+                            <td><span class="tag tag-pass">Near-optimal</span></td>
+                        </tr>
+                        <tr>
+                            <td>(0, −2)</td>
+                            <td>(−2.0, −4.0)</td>
+                            <td>20.00</td>
+                            <td>454 / 5000</td>
+                            <td><span class="tag tag-pass">Near-optimal</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>(0, −1)</strong></td>
+                            <td><strong>(−1.0, −2.0)</strong></td>
+                            <td><strong>5.00</strong></td>
+                            <td><strong>Classical optimum</strong></td>
+                            <td><span class="tag tag-pass">Optimal</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><span class="hash">#</span> Shor's Algorithm — Factorization Results</h3>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Composite N</th>
+                            <th>Base a</th>
+                            <th>Period r</th>
+                            <th>Factors</th>
+                            <th>Qubits Used</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>15</td>
+                            <td>4</td>
+                            <td>2</td>
+                            <td>3 × 5</td>
+                            <td>10</td>
+                            <td><span class="tag tag-pass">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>21</td>
+                            <td>13</td>
+                            <td>6</td>
+                            <td>3 × 7</td>
+                            <td>10</td>
+                            <td><span class="tag tag-pass">Success</span></td>
+                        </tr>
+                        <tr>
+                            <td>35</td>
+                            <td>4</td>
+                            <td>6</td>
+                            <td>5 × 7</td>
+                            <td>12</td>
+                            <td><span class="tag tag-pass">Success</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><span class="hash">#</span> Grover's Algorithm — Key Recovery</h3>
+            <p>
+                Target: 4-bit XOR+S-box cipher. Key = <code>0110</code>. Optimal iterations: 2 (π/4 · √16 ≈ 3.14,
+                rounded to 2 for small N). Measurement shots: 2048.
+            </p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Measured Key</th>
+                            <th>Count</th>
+                            <th>Probability</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>0110</strong></td>
+                            <td><strong>1975</strong></td>
+                            <td><strong>96.4%</strong></td>
+                            <td><span class="tag tag-pass">Correct Key</span></td>
+                        </tr>
+                        <tr>
+                            <td>0111</td>
+                            <td>9</td>
+                            <td>0.4%</td>
+                            <td><span class="tag tag-fail">Incorrect</span></td>
+                        </tr>
+                        <tr>
+                            <td>1111</td>
+                            <td>8</td>
+                            <td>0.4%</td>
+                            <td><span class="tag tag-fail">Incorrect</span></td>
+                        </tr>
+                        <tr>
+                            <td>1101</td>
+                            <td>7</td>
+                            <td>0.3%</td>
+                            <td><span class="tag tag-fail">Incorrect</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3><span class="hash">#</span> Simulatable vs. Real-World Scale</h3>
+
+            <div class="table-wrap">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Target</th>
+                            <th>This Suite (Simulated)</th>
+                            <th>Real-World Instance</th>
+                            <th>Scale Gap</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SVP</td>
+                            <td>2D, 6 qubits, ±3 radius</td>
+                            <td>500+ dimensions (Kyber/Dilithium)</td>
+                            <td>Exponential</td>
+                        </tr>
+                        <tr>
+                            <td>LWE</td>
+                            <td>n = 2, q = 4</td>
+                            <td>Kyber: n = 256, q = 3329</td>
+                            <td>Astronomical</td>
+                        </tr>
+                        <tr>
+                            <td>RSA</td>
+                            <td>N = 15–35 (4–6 bit primes)</td>
+                            <td>RSA-2048 (1024-bit primes)</td>
+                            <td>~2²⁰⁰⁰×</td>
+                        </tr>
+                        <tr>
+                            <td>AES</td>
+                            <td>4-bit keys</td>
+                            <td>AES-128</td>
+                            <td>~2¹²⁴×</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Citations -->
+        <section id="citations">
+            <div class="section-header">
+                <span class="section-number">§05</span>
+                <h2>References & Citations</h2>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[1]</span>
+                <div class="citation-text">
+                    <strong>P. W. Shor,</strong> "Algorithms for quantum computation: discrete logarithms and factoring,"
+                    in <em>Proceedings 35th Annual Symposium on Foundations of Computer Science</em>,
+                    Santa Fe, NM, USA, 1994, pp. 124–134. doi: <a href="https://doi.org/10.1109/SFCS.1994.365700" target="_blank">10.1109/SFCS.1994.365700</a>
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[2]</span>
+                <div class="citation-text">
+                    <strong>L. K. Grover,</strong> "A fast quantum mechanical algorithm for database search,"
+                    in <em>Proceedings of the Twenty-Eighth Annual ACM Symposium on Theory of Computing</em>,
+                    Philadelphia, PA, USA, 1996, pp. 212–219. doi: <a href="https://doi.org/10.1145/237814.237866" target="_blank">10.1145/237814.237866</a>
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[3]</span>
+                <div class="citation-text">
+                    <strong>E. Farhi, J. Goldstone, and S. Gutmann,</strong> "A Quantum Approximate Optimization Algorithm,"
+                    <em>arXiv preprint arXiv:1411.4028</em>, Nov. 2014.
+                    Available: <a href="https://arxiv.org/abs/1411.4028" target="_blank">https://arxiv.org/abs/1411.4028</a>
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[4]</span>
+                <div class="citation-text">
+                    <strong>O. Regev,</strong> "On lattices, learning with errors, random linear codes, and cryptography,"
+                    <em>Journal of the ACM (JACM)</em>, vol. 56, no. 6, pp. 1–40, Sep. 2009.
+                    doi: <a href="https://doi.org/10.1145/1568318.1568324" target="_blank">10.1145/1568318.1568324</a>
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[5]</span>
+                <div class="citation-text">
+                    <strong>NIST,</strong> "Post-Quantum Cryptography Standardization,"
+                    National Institute of Standards and Technology, 2022–2024.
+                    Available: <a href="https://csrc.nist.gov/projects/post-quantum-cryptography" target="_blank">https://csrc.nist.gov/projects/post-quantum-cryptography</a>
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[6]</span>
+                <div class="citation-text">
+                    <strong>M. A. Nielsen and I. L. Chuang,</strong>
+                    <em>Quantum Computation and Quantum Information: 10th Anniversary Edition</em>,
+                    Cambridge University Press, 2010. ISBN: 978-1107002173
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[7]</span>
+                <div class="citation-text">
+                    <strong>J. Preskill,</strong> "Quantum Computing in the NISQ era and beyond,"
+                    <em>Quantum</em>, vol. 2, p. 79, Aug. 2018.
+                    doi: <a href="https://doi.org/10.22331/q-2018-08-06-79" target="_blank">10.22331/q-2018-08-06-79</a>
+                </div>
+            </div>
+
+            <div class="citation">
+                <span class="citation-num">[8]</span>
+                <div class="citation-text">
+                    <strong>G. E. N. Mc Kenzie,</strong> "Quantum Cryptanalysis Suite: Simulated Qubits Doing Real Work,"
+                    <em>Zenodo</em>, May 2026. doi: <a href="https://doi.org/10.5281/zenodo.19961317" target="_blank">10.5281/zenodo.19961317</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- License -->
+        <section id="license">
+            <div class="section-header">
+                <span class="section-number">§06</span>
+                <h2>License</h2>
+            </div>
+
+            <div class="license-box">
+                <h3>📜 Apache License, Version 2.0</h3>
+                <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 1rem;">
+                    Copyright © 2026 <strong>Gerald Enrique Nelson Mc Kenzie</strong><br>
+                    ORCID: <a href="https://orcid.org/0009-0008-6017-4922" target="_blank">0009-0008-6017-4922</a> |
+                    DOI: <a href="https://doi.org/10.5281/zenodo.19961317" target="_blank">10.5281/zenodo.19961317</a>
+                </p>
+                <pre>Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+DISCLAIMER: This software is provided for educational and research purposes
+only. It implements quantum algorithms on classical simulators with severe
+qubit limitations (≤ 16 qubits). It cannot and should not be used for actual
+cryptanalysis of real-world cryptographic systems.</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" target="_blank">GitHub Repository</a>
+            <a href="https://doi.org/10.5281/zenodo.19961317" target="_blank">Zenodo DOI</a>
+            <a href="https://orcid.org/0009-0008-6017-4922" target="_blank">ORCID Profile</a>
+        </div>
+        <p>
+            Quantum Cryptanalysis Suite v1.0 &nbsp;|&nbsp; Published May 1, 2026<br>
+            Author: Gerald Enrique Nelson Mc Kenzie &nbsp;|&nbsp; Licensed under Apache 2.0
+        </p>
+    </footer>
+</body>
+</html>

@@ -46,7 +46,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated background mesh */
         .bg-mesh {
             position: fixed;
             inset: 0;
@@ -69,7 +68,6 @@
             pointer-events: none;
         }
 
-        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -135,7 +133,6 @@
             width: 100%;
         }
 
-        /* Hero Section */
         .hero {
             padding: 140px 2rem 80px;
             text-align: center;
@@ -314,7 +311,6 @@
             background: rgba(26, 34, 54, 0.8);
         }
 
-        /* Main Content */
         main {
             max-width: 900px;
             margin: 0 auto;
@@ -374,7 +370,6 @@
             font-size: 1.05rem;
         }
 
-        /* Abstract Box */
         .abstract-box {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
@@ -425,7 +420,6 @@
             font-family: var(--font-mono);
         }
 
-        /* Tables */
         .table-wrap {
             overflow-x: auto;
             border-radius: 12px;
@@ -483,7 +477,6 @@
         .tag-pass { background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); }
         .tag-fail { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); }
 
-        /* Code Blocks */
         .code-block {
             background: #0d1117;
             border: 1px solid var(--border-subtle);
@@ -544,7 +537,6 @@
         .code-number { color: #79c0ff; }
         .code-class { color: #f0883e; }
 
-        /* Info Cards */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -609,14 +601,12 @@
             margin: 0;
         }
 
-        /* Comparison Table */
         .comparison-table th:first-child,
         .comparison-table td:first-child {
             font-weight: 600;
             color: var(--text-primary);
         }
 
-        /* Citations */
         .citation {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
@@ -655,7 +645,6 @@
             text-decoration: underline;
         }
 
-        /* License Box */
         .license-box {
             background: var(--bg-card);
             border: 1px solid var(--border-subtle);
@@ -682,7 +671,6 @@
             border: 1px solid var(--border-subtle);
         }
 
-        /* Footer */
         footer {
             border-top: 1px solid var(--border-subtle);
             padding: 3rem 2rem;
@@ -709,7 +697,6 @@
             color: var(--accent-cyan);
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -728,7 +715,6 @@
             background: var(--text-muted);
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             nav .nav-links { display: none; }
             .hero { padding: 120px 1.5rem 60px; }
@@ -766,8 +752,8 @@
             <span class="gradient-text">Simulated Qubits Doing Real Work</span>
         </h1>
         <p class="subtitle">
-            A rigorous replacement for decorative quantum metaphors with exact state-vector
-            simulation of QAOA, Shor's algorithm, and Grover's search on toy cryptographic instances.
+            Exact state-vector simulation of QAOA, Shor's algorithm, and Grover's search
+            applied to toy cryptographic instances on gate-level quantum circuit emulation.
         </p>
 
         <div class="hero-meta">
@@ -834,18 +820,18 @@
             <div class="abstract-box">
                 <h3>Abstract</h3>
                 <p>
-                    We present the <strong>Quantum Cryptanalysis Suite (QCS)</strong>, a pedagogical framework that replaces
-                    decorative "quantum resonance field" metaphors with exact state-vector simulation of three canonical
-                    quantum algorithms applied to toy cryptographic instances. The suite implements (1) the Quantum
-                    Approximate Optimization Algorithm (QAOA) for lattice problems including the Shortest Vector Problem
-                    (SVP) and Learning With Errors (LWE), (2) Shor's period-finding algorithm for integer factorization
-                    on composite numbers up to <em>N</em> = 35, and (3) Grover's amplitude amplification for symmetric
-                    key search on 4–6 bit toy ciphers. All algorithms are executed on a lightweight, gate-level state-vector
-                    simulator supporting up to ~16 qubits on consumer hardware. We demonstrate that the original
-                    "resonance field" approach — wherein 96 classical Kuramoto oscillators were presented as qubits —
-                    performed no genuine quantum computation, and we provide a rigorous architectural mapping from those
-                    metaphors to their corresponding quantum algorithmic primitives. This work serves as an educational
-                    reference for understanding the boundary between quantum simulation and quantum-inspired heuristics.
+                    We present the <strong>Quantum Cryptanalysis Suite (QCS)</strong>, a pedagogical framework
+                    implementing exact state-vector simulation of three canonical quantum algorithms applied to
+                    toy cryptographic instances. The suite comprises (1) the Quantum Approximate Optimization
+                    Algorithm (QAOA) for lattice problems including the Shortest Vector Problem (SVP) and
+                    Learning With Errors (LWE), (2) Shor's period-finding algorithm for integer factorization
+                    on composite numbers up to <em>N</em> = 35, and (3) Grover's amplitude amplification for
+                    symmetric key search on 4–6 bit toy ciphers. All algorithms execute on a lightweight,
+                    gate-level state-vector simulator supporting up to ~16 qubits on consumer hardware.
+                    We provide rigorous architectural documentation, experimental validation, and explicit
+                    mappings from heuristic concepts to their corresponding quantum algorithmic primitives.
+                    This work serves as an educational reference for understanding the mechanics of quantum
+                    cryptanalysis algorithms through executable simulation.
                 </p>
                 <div class="keywords">
                     <span class="keyword">Quantum Computing</span>
@@ -879,12 +865,10 @@
             <p>
                 However, the growing public interest in quantum computing has also produced a proliferation of
                 <em>quantum-washing</em> — the presentation of classical heuristics in quantum terminology without
-                genuine quantum mechanical content. One such example is the "Quantum Resonance Field" approach to
-                classical cipher cracking, wherein coupled classical oscillators (Kuramoto model) are labeled as
-                "qubits" and their synchronization dynamics are interpreted as "quantum coherence." This document
-                provides a rigorous replacement: a complete, executable suite of actual quantum algorithms running on
-                an exact state-vector simulator, with explicit architectural mappings between the original metaphors
-                and their legitimate quantum counterparts.
+                genuine quantum mechanical content. This document provides a rigorous alternative: a complete,
+                executable suite of actual quantum algorithms running on an exact state-vector simulator,
+                with explicit architectural documentation and experimental validation. All code is provided
+                under the Apache 2.0 license for educational and research use.
             </p>
         </section>
 
@@ -926,53 +910,51 @@
                 <span class="code-keyword">self</span>.state[j + stride] = (a - b) / np.sqrt(<span class="code-number">2</span>)</code></pre>
             </div>
 
-            <h3><span class="hash">#</span> Metaphor-to-Algorithm Mapping</h3>
+            <h3><span class="hash">#</span> Algorithm-to-Hardware Mapping</h3>
             <p>
-                The original "Quantum Resonance Field" codebase employed physics-inspired terminology that, while
-                evocative, bore no mathematical relationship to actual quantum computation. The following table
-                establishes rigorous correspondences between the original metaphors and their legitimate quantum
-                algorithmic counterparts.
+                The following table establishes rigorous correspondences between high-level algorithmic concepts
+                and their low-level quantum circuit implementations within the simulator.
             </p>
 
             <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Original Metaphor</th>
-                            <th>Quantum Algorithmic Primitive</th>
+                            <th>Algorithmic Concept</th>
+                            <th>Quantum Primitive</th>
                             <th>Mathematical Object</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>"Resonance layers" (p = 4)</td>
+                            <td>Optimization layers (p = 3–5)</td>
                             <td>QAOA depth / Grover iteration count</td>
                             <td>Repetitions of cost-mixer or oracle-diffusion</td>
                         </tr>
                         <tr>
-                            <td>"Coupling strength" (0.18)</td>
+                            <td>Problem Hamiltonian</td>
                             <td>Ising interaction coefficients in H<sub>C</sub></td>
                             <td>Diagonal cost Hamiltonian terms</td>
                         </tr>
                         <tr>
-                            <td>"Phase cluster / coherence R"</td>
+                            <td>Solution quality metric</td>
                             <td>Expectation value ⟨ψ|H<sub>C</sub>|ψ⟩</td>
                             <td>Energy eigenvalue (lower = better solution)</td>
                         </tr>
                         <tr>
-                            <td>"Noise kick" (σ = 0.004)</td>
+                            <td>Solution space exploration</td>
                             <td>Mixer Hamiltonian evolution e<sup>(−iβH<sub>X</sub>)</sup></td>
-                            <td>RX rotations exploring solution space</td>
+                            <td>RX rotations exploring the computational basis</td>
                         </tr>
                         <tr>
-                            <td>"Anomaly score"</td>
-                            <td>Optimization landscape value</td>
+                            <td>Classical optimization</td>
+                            <td>Variational parameter tuning</td>
                             <td>Classical outer-loop objective function</td>
                         </tr>
                         <tr>
-                            <td>"Subspace redux" (10<sup>−8</sup>)</td>
-                            <td>Variational parameter precision</td>
-                            <td>Convergence tolerance of classical optimizer</td>
+                            <td>Convergence precision</td>
+                            <td>Parameter update tolerance</td>
+                            <td>Hill-climbing step size and iteration bound</td>
                         </tr>
                     </tbody>
                 </table>

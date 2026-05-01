@@ -256,5 +256,3 @@ Public domain. Use for education, research, or entertainment.
 ---
 
 > *"The qubits are no longer decoration. They are state vectors undergoing unitary evolution, and the measurement outcomes directly determine the cryptanalytic result."*
-#   Q u a n t u m - C r y p t a n a l y s i s - S u i t e  
- 

@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quantum Cryptanalysis Suite — Technical Research Document</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --bg-primary: #0a0e17;
@@ -31,7 +34,11 @@
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         html {
             scroll-behavior: smooth;
@@ -51,9 +58,9 @@
             inset: 0;
             z-index: -1;
             background:
-                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99,102,241,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(34,211,238,0.06) 0%, transparent 50%),
-                radial-gradient(ellipse 50% 50% at 50% 100%, rgba(167,139,250,0.05) 0%, transparent 50%);
+                radial-gradient(ellipse 80% 50% at 20% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse 60% 40% at 80% 60%, rgba(34, 211, 238, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse 50% 50% at 50% 100%, rgba(167, 139, 250, 0.05) 0%, transparent 50%);
             pointer-events: none;
         }
 
@@ -62,8 +69,8 @@
             inset: 0;
             z-index: -1;
             background-image:
-                linear-gradient(rgba(148,163,184,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(148,163,184,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(148, 163, 184, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
             background-size: 60px 60px;
             pointer-events: none;
         }
@@ -148,7 +155,7 @@
             transform: translateX(-50%);
             width: 800px;
             height: 800px;
-            background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
             pointer-events: none;
         }
 
@@ -176,8 +183,17 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
         }
 
         .hero h1 {
@@ -239,10 +255,21 @@
             font-size: 1.1rem;
         }
 
-        .meta-card .icon.orcid { background: rgba(168, 192, 32, 0.15); }
-        .meta-card .icon.doi { background: rgba(34, 211, 238, 0.15); }
-        .meta-card .icon.git { background: rgba(167, 139, 250, 0.15); }
-        .meta-card .icon.date { background: rgba(251, 113, 133, 0.15); }
+        .meta-card .icon.orcid {
+            background: rgba(168, 192, 32, 0.15);
+        }
+
+        .meta-card .icon.doi {
+            background: rgba(34, 211, 238, 0.15);
+        }
+
+        .meta-card .icon.git {
+            background: rgba(167, 139, 250, 0.15);
+        }
+
+        .meta-card .icon.date {
+            background: rgba(251, 113, 133, 0.15);
+        }
 
         .meta-card .label {
             font-size: 0.7rem;
@@ -471,11 +498,30 @@
             font-family: var(--font-mono);
         }
 
-        .tag-qaoa { background: rgba(34, 211, 238, 0.12); color: var(--accent-cyan); }
-        .tag-shor { background: rgba(167, 139, 250, 0.12); color: var(--accent-violet); }
-        .tag-grover { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); }
-        .tag-pass { background: rgba(52, 211, 153, 0.12); color: var(--accent-emerald); }
-        .tag-fail { background: rgba(251, 113, 133, 0.12); color: var(--accent-rose); }
+        .tag-qaoa {
+            background: rgba(34, 211, 238, 0.12);
+            color: var(--accent-cyan);
+        }
+
+        .tag-shor {
+            background: rgba(167, 139, 250, 0.12);
+            color: var(--accent-violet);
+        }
+
+        .tag-grover {
+            background: rgba(251, 113, 133, 0.12);
+            color: var(--accent-rose);
+        }
+
+        .tag-pass {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--accent-emerald);
+        }
+
+        .tag-fail {
+            background: rgba(251, 113, 133, 0.12);
+            color: var(--accent-rose);
+        }
 
         .code-block {
             background: #0d1117;
@@ -490,7 +536,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0.75rem 1.25rem;
-            background: rgba(255,255,255,0.02);
+            background: rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid var(--border-subtle);
         }
 
@@ -513,9 +559,17 @@
             border-radius: 50%;
         }
 
-        .dot-red { background: #ff5f56; }
-        .dot-yellow { background: #ffbd2e; }
-        .dot-green { background: #27c93f; }
+        .dot-red {
+            background: #ff5f56;
+        }
+
+        .dot-yellow {
+            background: #ffbd2e;
+        }
+
+        .dot-green {
+            background: #27c93f;
+        }
 
         pre {
             padding: 1.25rem;
@@ -530,12 +584,29 @@
             font-family: var(--font-mono);
         }
 
-        .code-keyword { color: #ff7b72; }
-        .code-func { color: #d2a8ff; }
-        .code-string { color: #a5d6ff; }
-        .code-comment { color: #8b949e; }
-        .code-number { color: #79c0ff; }
-        .code-class { color: #f0883e; }
+        .code-keyword {
+            color: #ff7b72;
+        }
+
+        .code-func {
+            color: #d2a8ff;
+        }
+
+        .code-string {
+            color: #a5d6ff;
+        }
+
+        .code-comment {
+            color: #8b949e;
+        }
+
+        .code-number {
+            color: #79c0ff;
+        }
+
+        .code-class {
+            color: #f0883e;
+        }
 
         .info-grid {
             display: grid;
@@ -716,14 +787,30 @@
         }
 
         @media (max-width: 768px) {
-            nav .nav-links { display: none; }
-            .hero { padding: 120px 1.5rem 60px; }
-            .hero-meta { flex-direction: column; align-items: center; }
-            main { padding: 0 1.5rem 3rem; }
-            .info-grid { grid-template-columns: 1fr; }
+            nav .nav-links {
+                display: none;
+            }
+
+            .hero {
+                padding: 120px 1.5rem 60px;
+            }
+
+            .hero-meta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            main {
+                padding: 0 1.5rem 3rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="bg-mesh"></div>
     <div class="bg-grid"></div>
@@ -761,21 +848,24 @@
                 <div class="icon orcid">🆔</div>
                 <div>
                     <div class="label">ORCID</div>
-                    <div class="value"><a href="https://orcid.org/0009-0008-6017-4922" target="_blank">0009-0008-6017-4922</a></div>
+                    <div class="value"><a href="https://orcid.org/0009-0008-6017-4922"
+                            target="_blank">0009-0008-6017-4922</a></div>
                 </div>
             </div>
             <div class="meta-card">
                 <div class="icon doi">📄</div>
                 <div>
                     <div class="label">DOI</div>
-                    <div class="value"><a href="https://doi.org/10.5281/zenodo.19961317" target="_blank">10.5281/zenodo.19961317</a></div>
+                    <div class="value"><a href="https://doi.org/10.5281/zenodo.19961317"
+                            target="_blank">10.5281/zenodo.19961317</a></div>
                 </div>
             </div>
             <div class="meta-card">
                 <div class="icon git">⚡</div>
                 <div>
                     <div class="label">Repository</div>
-                    <div class="value"><a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" target="_blank">GitHub</a></div>
+                    <div class="value"><a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite"
+                            target="_blank">GitHub</a></div>
                 </div>
             </div>
             <div class="meta-card">
@@ -787,14 +877,14 @@
             </div>
         </div>
 
-        <div class="hero-actions">
+        <!-- <div class="hero-actions">
             <a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" class="btn btn-primary" target="_blank">
                 <span>⬇</span> Download Source
             </a>
             <a href="#abstract" class="btn btn-secondary">
                 <span>📖</span> Read Document
             </a>
-        </div>
+        </div> -->
     </header>
 
     <main>
@@ -802,15 +892,20 @@
         <section id="author">
             <div class="abstract-box">
                 <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                    <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--gradient-accent); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--bg-primary);">G</div>
+                    <div
+                        style="width: 64px; height: 64px; border-radius: 50%; background: var(--gradient-accent); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--bg-primary);">
+                        G</div>
                     <div>
                         <h3 style="margin: 0; font-family: var(--font-body);">Gerald Enrique Nelson Mc Kenzie</h3>
-                        <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Independent Researcher</p>
+                        <p style="margin: 0.25rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Independent
+                            Researcher</p>
                     </div>
                 </div>
                 <p style="font-style: normal; margin-bottom: 0;">
-                    <strong>Correspondence:</strong> <a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite" style="color: var(--accent-cyan);">github.com/lordxmen2k/Quantum-Cryptanalysis-Suite</a><br>
-                    <strong>Date:</strong> May 1, 2026 &nbsp;|&nbsp; <strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>License:</strong> Apache 2.0
+                    <strong>Correspondence:</strong> <a href="https://github.com/lordxmen2k/Quantum-Cryptanalysis-Suite"
+                        style="color: var(--accent-cyan);">github.com/lordxmen2k/Quantum-Cryptanalysis-Suite</a><br>
+                    <strong>Date:</strong> May 1, 2026 &nbsp;|&nbsp; <strong>Version:</strong> 1.0 &nbsp;|&nbsp;
+                    <strong>License:</strong> Apache 2.0
                 </p>
             </div>
         </section>
@@ -857,7 +952,8 @@
                 theoretical results in modern computer science. Shor's algorithm (1994) demonstrated that a universal
                 quantum computer could factor integers and compute discrete logarithms in polynomial time, threatening
                 the foundations of RSA and Elliptic Curve Cryptography (ECC). Grover's algorithm (1996) established
-                a quadratic speedup for unstructured search, effectively halving the security margin of symmetric ciphers.
+                a quadratic speedup for unstructured search, effectively halving the security margin of symmetric
+                ciphers.
                 More recently, the Quantum Approximate Optimization Algorithm (QAOA) has emerged as a leading candidate
                 for solving combinatorial optimization problems on near-term quantum hardware, with direct applications
                 to lattice-based cryptanalysis.
@@ -885,13 +981,15 @@
                 <em>2<sup>n</sup></em> complex amplitude vector and applies unitary operations via direct matrix-vector
                 multiplication. The simulator supports single-qubit gates (H, X, Y, Z, RX, RY, RZ), two-qubit gates
                 (CNOT, CZ, controlled-phase, SWAP), and multi-qubit primitives including the Quantum Fourier Transform
-                (QFT) and its inverse. On consumer hardware, the simulator comfortably handles up to approximately 16 qubits
+                (QFT) and its inverse. On consumer hardware, the simulator comfortably handles up to approximately 16
+                qubits
                 (65,536 amplitudes), beyond which memory requirements grow exponentially.
             </p>
 
             <div class="code-block">
                 <div class="code-header">
-                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span
+                            class="dot dot-green"></span></div>
                     <span class="lang">Python</span>
                 </div>
                 <pre><code><span class="code-keyword">class</span> <span class="code-class">QuantumSimulator</span>:
@@ -972,12 +1070,14 @@
                 <div class="info-card">
                     <div class="card-icon" style="background: rgba(34,211,238,0.15);">⚛️</div>
                     <h4>QAOA</h4>
-                    <p>Variational quantum optimization for lattice problems. Maps SVP and LWE to Ising Hamiltonians.</p>
+                    <p>Variational quantum optimization for lattice problems. Maps SVP and LWE to Ising Hamiltonians.
+                    </p>
                 </div>
                 <div class="info-card">
                     <div class="card-icon" style="background: rgba(167,139,250,0.15);">🔢</div>
                     <h4>Shor's</h4>
-                    <p>Quantum period-finding via QFT. Factors toy RSA instances using modular exponentiation oracles.</p>
+                    <p>Quantum period-finding via QFT. Factors toy RSA instances using modular exponentiation oracles.
+                    </p>
                 </div>
                 <div class="info-card">
                     <div class="card-icon" style="background: rgba(251,113,133,0.15);">🔍</div>
@@ -1003,7 +1103,8 @@
 
             <div class="code-block">
                 <div class="code-header">
-                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span
+                            class="dot dot-green"></span></div>
                     <span class="lang">Python</span>
                 </div>
                 <pre><code><span class="code-keyword">def</span> <span class="code-func">_apply_cost</span>(<span class="code-keyword">self</span>, gamma: <span class="code-class">float</span>):
@@ -1026,12 +1127,14 @@
                 detection. The implementation follows the standard three-register architecture: a work register
                 initialized in uniform superposition, an auxiliary register initialized to |1⟩, and a modular
                 exponentiation oracle that computes a<sup>x</sup> mod N reversibly. The Quantum Fourier Transform
-                on the work register extracts the period r, from which factors are recovered via gcd(a<sup>r/2</sup> ± 1, N).
+                on the work register extracts the period r, from which factors are recovered via gcd(a<sup>r/2</sup> ±
+                1, N).
             </p>
 
             <div class="code-block">
                 <div class="code-header">
-                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span class="dot dot-green"></span></div>
+                    <div class="dots"><span class="dot dot-red"></span><span class="dot dot-yellow"></span><span
+                            class="dot dot-green"></span></div>
                     <span class="lang">Python</span>
                 </div>
                 <pre><code><span class="code-comment"># Shor's core: period finding via QFT</span>
@@ -1049,7 +1152,8 @@ sim.qft(<span class="code-func">list</span>(<span class="code-func">range</span>
             <h3><span class="hash">#</span> Grover's Algorithm for Symmetric Key Search</h3>
             <p>
                 Grover's algorithm (Grover, 1996) provides a quadratic speedup for unstructured search problems.
-                For an <em>n</em>-bit key space, the optimal number of iterations is ⌊π/4 · √N⌋, where N = 2<sup>n</sup>.
+                For an <em>n</em>-bit key space, the optimal number of iterations is ⌊π/4 · √N⌋, where N =
+                2<sup>n</sup>.
                 The algorithm alternates between a phase oracle (which marks the correct key by flipping its phase)
                 and a diffusion operator (which amplifies the amplitude of marked states).
             </p>
@@ -1257,9 +1361,11 @@ sim.qft(<span class="code-func">list</span>(<span class="code-func">range</span>
             <div class="citation">
                 <span class="citation-num">[1]</span>
                 <div class="citation-text">
-                    <strong>P. W. Shor,</strong> "Algorithms for quantum computation: discrete logarithms and factoring,"
+                    <strong>P. W. Shor,</strong> "Algorithms for quantum computation: discrete logarithms and
+                    factoring,"
                     in <em>Proceedings 35th Annual Symposium on Foundations of Computer Science</em>,
-                    Santa Fe, NM, USA, 1994, pp. 124–134. doi: <a href="https://doi.org/10.1109/SFCS.1994.365700" target="_blank">10.1109/SFCS.1994.365700</a>
+                    Santa Fe, NM, USA, 1994, pp. 124–134. doi: <a href="https://doi.org/10.1109/SFCS.1994.365700"
+                        target="_blank">10.1109/SFCS.1994.365700</a>
                 </div>
             </div>
 
@@ -1268,23 +1374,27 @@ sim.qft(<span class="code-func">list</span>(<span class="code-func">range</span>
                 <div class="citation-text">
                     <strong>L. K. Grover,</strong> "A fast quantum mechanical algorithm for database search,"
                     in <em>Proceedings of the Twenty-Eighth Annual ACM Symposium on Theory of Computing</em>,
-                    Philadelphia, PA, USA, 1996, pp. 212–219. doi: <a href="https://doi.org/10.1145/237814.237866" target="_blank">10.1145/237814.237866</a>
+                    Philadelphia, PA, USA, 1996, pp. 212–219. doi: <a href="https://doi.org/10.1145/237814.237866"
+                        target="_blank">10.1145/237814.237866</a>
                 </div>
             </div>
 
             <div class="citation">
                 <span class="citation-num">[3]</span>
                 <div class="citation-text">
-                    <strong>E. Farhi, J. Goldstone, and S. Gutmann,</strong> "A Quantum Approximate Optimization Algorithm,"
+                    <strong>E. Farhi, J. Goldstone, and S. Gutmann,</strong> "A Quantum Approximate Optimization
+                    Algorithm,"
                     <em>arXiv preprint arXiv:1411.4028</em>, Nov. 2014.
-                    Available: <a href="https://arxiv.org/abs/1411.4028" target="_blank">https://arxiv.org/abs/1411.4028</a>
+                    Available: <a href="https://arxiv.org/abs/1411.4028"
+                        target="_blank">https://arxiv.org/abs/1411.4028</a>
                 </div>
             </div>
 
             <div class="citation">
                 <span class="citation-num">[4]</span>
                 <div class="citation-text">
-                    <strong>O. Regev,</strong> "On lattices, learning with errors, random linear codes, and cryptography,"
+                    <strong>O. Regev,</strong> "On lattices, learning with errors, random linear codes, and
+                    cryptography,"
                     <em>Journal of the ACM (JACM)</em>, vol. 56, no. 6, pp. 1–40, Sep. 2009.
                     doi: <a href="https://doi.org/10.1145/1568318.1568324" target="_blank">10.1145/1568318.1568324</a>
                 </div>
@@ -1295,7 +1405,8 @@ sim.qft(<span class="code-func">list</span>(<span class="code-func">range</span>
                 <div class="citation-text">
                     <strong>NIST,</strong> "Post-Quantum Cryptography Standardization,"
                     National Institute of Standards and Technology, 2022–2024.
-                    Available: <a href="https://csrc.nist.gov/projects/post-quantum-cryptography" target="_blank">https://csrc.nist.gov/projects/post-quantum-cryptography</a>
+                    Available: <a href="https://csrc.nist.gov/projects/post-quantum-cryptography"
+                        target="_blank">https://csrc.nist.gov/projects/post-quantum-cryptography</a>
                 </div>
             </div>
 
@@ -1320,8 +1431,10 @@ sim.qft(<span class="code-func">list</span>(<span class="code-func">range</span>
             <div class="citation">
                 <span class="citation-num">[8]</span>
                 <div class="citation-text">
-                    <strong>G. E. N. Mc Kenzie,</strong> "Quantum Cryptanalysis Suite: Simulated Qubits Doing Real Work,"
-                    <em>Zenodo</em>, May 2026. doi: <a href="https://doi.org/10.5281/zenodo.19961317" target="_blank">10.5281/zenodo.19961317</a>
+                    <strong>G. E. N. Mc Kenzie,</strong> "Quantum Cryptanalysis Suite: Simulated Qubits Doing Real
+                    Work,"
+                    <em>Zenodo</em>, May 2026. doi: <a href="https://doi.org/10.5281/zenodo.19961317"
+                        target="_blank">10.5281/zenodo.19961317</a>
                 </div>
             </div>
         </section>
@@ -1372,4 +1485,5 @@ cryptanalysis of real-world cryptographic systems.</pre>
         </p>
     </footer>
 </body>
+
 </html>
